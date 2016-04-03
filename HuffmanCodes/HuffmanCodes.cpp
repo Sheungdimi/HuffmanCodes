@@ -36,7 +36,7 @@ struct HeapStruct
 {
 	int Capacity;
 	int Size;
-	HeapStructType *Elements;
+	HeapStructType Elements;
 };
 
 int main()
@@ -47,6 +47,13 @@ int main()
 
 	scanf("%d", &HuffmanSize);
 	H = BuildMinHeap(HuffmanSize);
+
+	for (int i = 0; i < HuffmanSize; i++)
+	{
+		printf("%c, %d\n", H->Elements[i].Element, H->Elements[i].Weight);
+	}
+
+
 
 	return 0;
 }
@@ -78,6 +85,8 @@ PriorityQueue BuildMinHeap(int HuffmanSize)
 	char Element;
 	int Weight;
 
+	X = (HeapStructType)malloc(sizeof(struct TreeNode));
+
 	H = Initialize(HuffmanSize);
 
 	for (i = 0; i < HuffmanSize; i++)
@@ -88,48 +97,6 @@ PriorityQueue BuildMinHeap(int HuffmanSize)
 	}
 
 	return H;
-}
-
-
-//删除优先队列的最小值
-HeapStructType DeleteMin(PriorityQueue H)
-{
-	int i, Child;
-	HeapStructType MinElement, LastElement;
-
-	if (IsEmpty(H))
-		return H->Elements[0];
-
-	MinElement = H->Elements[1];
-	LastElement = H->Elements[H->Size--];
-
-	for (i = 1; i * 2 <= H->Size; i = Child)
-	{
-		Child = i * 2;
-		if (Child != H->Size && H->Elements[Child + 1]->Weight < H->Elements[Child]->Weight)
-			Child++;
-
-		if (LastElement->Weight > H->Elements[Child]->Weight)
-			H->Elements[i] = H->Elements[Child];
-		else
-			break;
-	}
-	H->Elements[i] = LastElement;
-	return MinElement;
-}
-
-//插入到优先队列
-void Insert(HeapStructType X, PriorityQueue H)
-{
-	int i = 0;
-
-	if (IsFull(H))
-		return;
-
-	for (i = ++H->Size; H->Elements[i / 2]->Weight > X->Weight; i /= 2)
-		H->Elements[i] = H->Elements[i / 2];
-
-	H->Elements[i] = X;
 }
 
 //优先队列的初始化
@@ -143,18 +110,60 @@ PriorityQueue Initialize(int MaxElments)
 	H = (PriorityQueue)malloc(sizeof(struct HeapStruct));
 	if (H == NULL)
 		printf("Out of space");
-
-	printf("MaxElements:%d\n", MaxElments);
-	H->Elements = (HuffmanTree *)malloc(sizeof(TreeNode) * MaxElments);
-	//if(H->Elements == NULL)
-	//	printf("Out of space");
+	
+	H->Elements = (HeapStructType)malloc(sizeof(struct TreeNode) * (MaxElments + 1));
+	if (H->Elements == NULL)
+		printf("Out of space");
 
 	H->Capacity = MaxElments;
 	H->Size = 0;
-	H->Elements[0]->Weight = MinData;
-
+	H->Elements[0].Weight = MinData;
+	H->Elements[0].Element = NULL;
 	return H;
 }
+
+//删除优先队列的最小值
+HeapStructType DeleteMin(PriorityQueue H)
+{
+	int i, Child;
+	HeapStructType MinElement, LastElement;
+
+	if (IsEmpty(H))
+		return &H->Elements[0];
+
+	MinElement = &H->Elements[1];
+	LastElement = &H->Elements[H->Size--];
+
+	for (i = 1; i * 2 <= H->Size; i = Child)
+	{
+		Child = i * 2;
+		if (Child != H->Size && H->Elements[Child + 1].Weight < H->Elements[Child].Weight)
+			Child++;
+
+		if (LastElement->Weight > H->Elements[Child].Weight)
+			H->Elements[i] = H->Elements[Child];
+		else
+			break;
+	}
+	H->Elements[i] = *LastElement;
+	return MinElement;
+}
+
+//插入到优先队列
+void Insert(HeapStructType X, PriorityQueue H)
+{
+	int i = 0;
+
+	if (IsFull(H))
+		return;
+
+	for (i = ++H->Size; H->Elements[i / 2].Weight > X->Weight; i /= 2)
+		H->Elements[i] = H->Elements[i / 2];
+
+	H->Elements[i] = *X;
+}
+
+
 
 int IsFull(PriorityQueue H)
 {

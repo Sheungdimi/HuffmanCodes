@@ -227,18 +227,20 @@ int IsEmpty(PriorityQueue H);
 PriorityQueue Initialize(int MaxElements);
 int IsFull(PriorityQueue H);
 void Insert(HuffmanTree X, PriorityQueue H);
+HuffmanTree Huffman(PriorityQueue H);
 
 int main()
 {
 	int HuffmanSize = 0;
 	HuffmanInfo HI = NULL;
 	PriorityQueue H = NULL;
-	
+	HuffmanTree	HT = NULL;
 	HuffmanTree temp = NULL;
 	scanf("%d", &HuffmanSize);
 
 	HI = (HuffmanInfo)malloc(sizeof(struct InfoNode) * HuffmanSize);
 	H = Initialize(HuffmanSize);
+	HT = (HuffmanTree)malloc(sizeof(struct HuffmanNode));
 	temp = (HuffmanTree)malloc(sizeof(struct HuffmanNode));
 
 	for (int i = 0; i < HuffmanSize; i++)
@@ -246,6 +248,7 @@ int main()
 		getchar();
 		scanf("%c %d", &HI[i].Data, &HI[i].Weight);
 		temp->Weight = HI[i].Weight;
+		temp->Left = temp->Right = NULL;
 		Insert(temp, H);
 	}
 
@@ -261,27 +264,35 @@ int main()
 		printf("%d\n", H->TreeCell[i].Weight);
 	}
 
-	temp = DeleteMin(H);
-	printf("Delete1:%d\n", temp->Weight);
+	HT = Huffman(H);
 
-	temp = DeleteMin(H);
-	printf("Delete2:%d\n", temp->Weight);
-
-	temp = DeleteMin(H);
-	printf("Delete3:%d\n", temp->Weight);
-
-	temp = DeleteMin(H);
-	printf("Delete4:%d\n", temp->Weight);
-
-	temp = DeleteMin(H);
-	printf("Delete5:%d\n", temp->Weight);
-
-	temp = DeleteMin(H);
-	printf("Delete6:%d\n", temp->Weight);
-
-	temp = DeleteMin(H);
-	printf("Delete7:%d\n", temp->Weight);
 	return 0;
+}
+
+HuffmanTree Huffman(PriorityQueue H)
+{
+	int i = 0;
+	int j = 7;
+	HuffmanTree HT;
+
+	while (H->Size != 1)
+	{
+		HT = (HuffmanTree)malloc(sizeof(struct HuffmanNode));
+		HT->Left = DeleteMin(H);
+		printf("HT->Left:%d\n", HT->Left->Weight);
+		HT->Right = DeleteMin(H);
+		printf("HT->Right:%d\n", HT->Right->Weight);
+		HT->Weight = HT->Left->Weight + HT->Right->Weight;
+		Insert(HT, H);
+		printf("H:\n");
+		for (int i = 0; i < j; i++)
+		{
+			printf("%d\n", H->TreeCell[i].Weight);
+		}
+		j--;
+	}
+	//HT = DeleteMin(H);
+	return HT;
 }
 
 HuffmanTree DeleteMin(PriorityQueue H)

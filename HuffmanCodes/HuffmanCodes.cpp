@@ -12,7 +12,7 @@ typedef struct HeapStruct *PriorityQueue;
 struct TreeNode;
 typedef struct TreeNode *HuffmanTree;
 
-
+HuffmanTree Huffman(PriorityQueue H);
 
 //优先队列的基本操作
 int IsEmpty(PriorityQueue H);
@@ -42,6 +42,7 @@ struct HeapStruct
 int main()
 {
 	PriorityQueue H = NULL;
+	HuffmanTree	  HT = NULL;
 	int HuffmanSize = 0;
 	int *test;
 
@@ -53,6 +54,7 @@ int main()
 		printf("%c, %d\n", H->Elements[i].Element, H->Elements[i].Weight);
 	}
 
+	HT = Huffman(H);
 
 
 	return 0;
@@ -68,7 +70,9 @@ HuffmanTree Huffman(PriorityQueue H)
 	{
 		T = (HuffmanTree)malloc(sizeof(struct TreeNode));
 		T->Left = DeleteMin(H);
+		printf("T->Left:%c, %d\n", T->Left->Element, T->Left->Weight);
 		T->Right = DeleteMin(H);
+		printf("T->Right:%c, %d\n", T->Right->Element, T->Right->Weight);
 		T->Weight = T->Left->Weight + T->Right->Weight;
 		Insert(T, H);
 	}
@@ -77,50 +81,6 @@ HuffmanTree Huffman(PriorityQueue H)
 	return T;
 }
 
-PriorityQueue BuildMinHeap(int HuffmanSize)
-{
-	PriorityQueue H;
-	HeapStructType X;
-	int i = 0;
-	char Element;
-	int Weight;
-
-	X = (HeapStructType)malloc(sizeof(struct TreeNode));
-
-	H = Initialize(HuffmanSize);
-
-	for (i = 0; i < HuffmanSize; i++)
-	{
-		getchar();
-		scanf("%c %d", &X->Element, &X->Weight);
-		Insert(X, H);
-	}
-
-	return H;
-}
-
-//优先队列的初始化
-PriorityQueue Initialize(int MaxElments)
-{
-	PriorityQueue H = NULL;
-
-	if (MaxElments < MinPQsize || MaxElments > MaxElments)
-		return NULL;
-
-	H = (PriorityQueue)malloc(sizeof(struct HeapStruct));
-	if (H == NULL)
-		printf("Out of space");
-	
-	H->Elements = (HeapStructType)malloc(sizeof(struct TreeNode) * (MaxElments + 1));
-	if (H->Elements == NULL)
-		printf("Out of space");
-
-	H->Capacity = MaxElments;
-	H->Size = 0;
-	H->Elements[0].Weight = MinData;
-	H->Elements[0].Element = NULL;
-	return H;
-}
 
 //删除优先队列的最小值
 HeapStructType DeleteMin(PriorityQueue H)
@@ -173,4 +133,50 @@ int IsFull(PriorityQueue H)
 int IsEmpty(PriorityQueue H)
 {
 	return H->Size == 0;
+}
+
+//构建优先队列
+PriorityQueue BuildMinHeap(int HuffmanSize)
+{
+	PriorityQueue H;
+	HeapStructType X;
+	int i = 0;
+	char Element;
+	int Weight;
+
+	X = (HeapStructType)malloc(sizeof(struct TreeNode));
+
+	H = Initialize(HuffmanSize);
+
+	for (i = 0; i < HuffmanSize; i++)
+	{
+		getchar();
+		scanf("%c %d", &X->Element, &X->Weight);
+		Insert(X, H);
+	}
+
+	return H;
+}
+
+//优先队列的初始化
+PriorityQueue Initialize(int MaxElments)
+{
+	PriorityQueue H = NULL;
+
+	if (MaxElments < MinPQsize || MaxElments > MaxElments)
+		return NULL;
+
+	H = (PriorityQueue)malloc(sizeof(struct HeapStruct));
+	if (H == NULL)
+		printf("Out of space");
+
+	H->Elements = (HeapStructType)malloc(sizeof(struct TreeNode) * (MaxElments + 1));
+	if (H->Elements == NULL)
+		printf("Out of space");
+
+	H->Capacity = MaxElments;
+	H->Size = 0;
+	H->Elements[0].Weight = MinData;
+	H->Elements[0].Element = NULL;
+	return H;
 }
